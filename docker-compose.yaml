@@ -1,0 +1,38 @@
+services:
+  #  app:
+  #    build:
+  #      context: ./
+  #      dockerfile: Dockerfile
+  #    image: test/app:v1
+  #    container_name: app
+  #    ports:
+  #      - "80:1323"
+  #    restart: on-failure
+  #    environment:
+  #      - POSTGRES_HOST=app_db
+  #    depends_on:
+  #      app_db:
+  #        condition: service_healthy
+  #      app_redis:
+  #        condition: service_healthy
+
+  app_db:
+    image: postgres:latest
+    container_name: app_db
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=mtest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -d mtest -U admin']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
